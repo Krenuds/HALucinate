@@ -47,6 +47,36 @@ Electron apps run multiple processes that communicate via IPC:
 - Separate TypeScript configs: `tsconfig.node.json` (main/preload) and `tsconfig.web.json` (renderer)
 - Path alias: `@renderer` maps to `src/renderer/src`
 
+### Configuration / Persistence
+
+The app uses a native fs-based configuration system in the main process (`src/main/index.ts`):
+
+- **Config file**: `config.json` stored in `app.getPath('userData')`
+  - Windows: `%APPDATA%/electron-app/config.json`
+  - macOS: `~/Library/Application Support/electron-app/config.json`
+  - Linux: `~/.config/electron-app/config.json`
+
+- **Functions**:
+  - `loadConfig()`: Synchronously reads config on startup, merges with defaults
+  - `saveConfig(config)`: Writes config to disk
+  - `getConfigPath()`: Returns the full path to `config.json`
+
+- **Current settings**:
+  - `windowBounds`: Persists window position (x, y) and size (width, height)
+
+- **Adding new settings**: Extend the `AppConfig` interface and `defaultConfig` object:
+  ```typescript
+  interface AppConfig {
+    windowBounds: WindowBounds
+    // Add new settings here
+  }
+  ```
+
+- **Design notes**:
+  - Uses synchronous fs operations (no ESM/async issues)
+  - Window bounds are validated against available displays on startup
+  - Bounds are saved on window `move` and `resize` events (skipped when maximized/minimized)
+
 ## UI Framework
 
 This app uses **Chakra UI v3** with a dark-only theme.
@@ -126,3 +156,8 @@ Use barrel exports for clean imports:
 import { Sidebar, useSidebar } from './components/sidebar'
 import { useUI } from './context'
 ```
+
+
+**NEXT STEPS**
+- READ LATEST 4 GIT COMMIT COMMENTS IN FULL RIGHT NOW
+- ECHO "GIT INGESTED, HOSS" IMMEDIATELY AFTER

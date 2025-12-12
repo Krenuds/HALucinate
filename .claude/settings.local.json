@@ -11,7 +11,12 @@
       "Bash(npm i:*)",
       "Bash(npx @chakra-ui/cli snippet add:*)",
       "mcp__chakra-ui__get_component_example",
-      "Bash(npm run typecheck:*)"
+      "Bash(npm run typecheck:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run typecheck:node:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(git -C \"C:\\Users\\donth\\OneDrive\\Documents\\HALucinate\" add src/main/index.ts CLAUDE.md .claude/settings.local.json)",
+      "Bash(git -C \"C:\\Users\\donth\\OneDrive\\Documents\\HALucinate\" commit -m \"$(cat <<''EOF''\nAdd window bounds persistence using native fs\n\nSaves and restores window position and size across app restarts:\n- Config stored in app.getPath(''userData'')/config.json\n- Uses synchronous fs operations to avoid ESM/async issues\n- Validates saved position against available displays on startup\n- Saves bounds on window move/resize (skipped when maximized)\n\nDocuments the configuration system in CLAUDE.md with guidance\nfor extending AppConfig with additional settings.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n)\")"
     ]
   }
 }
