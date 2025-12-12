@@ -9,11 +9,7 @@ function Titlebar(): React.JSX.Element {
   return (
     <Box
       as="header"
-      position="fixed"
-      top="0"
-      left="0"
-      right="0"
-      zIndex="banner"
+      flexShrink={0}
       bg="transparent"
       css={{ WebkitAppRegion: 'drag' }}
     >
