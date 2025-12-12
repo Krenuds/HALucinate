@@ -1,7 +1,10 @@
 import { HStack, Heading, IconButton, Spacer, Box } from '@chakra-ui/react'
 import { VscChromeMinimize, VscChromeMaximize, VscChromeClose } from 'react-icons/vsc'
+import { useTitlebar } from './useTitlebar'
 
 function Titlebar(): React.JSX.Element {
+  const { title } = useTitlebar()
+
   const handleMinimize = (): void => window.api.windowMinimize()
   const handleMaximize = (): void => window.api.windowMaximize()
   const handleClose = (): void => window.api.windowClose()
@@ -15,7 +18,7 @@ function Titlebar(): React.JSX.Element {
     >
       <HStack h="10" px="4">
         <Heading size="sm" fontWeight="semibold">
-          Mr. Parsypants
+          {title}
         </Heading>
         <Spacer />
         <HStack gap="0" css={{ WebkitAppRegion: 'no-drag' }}>

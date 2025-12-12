@@ -59,7 +59,7 @@ This app uses **Chakra UI v3** with a dark-only theme.
 
 ### Custom Titlebar
 
-The app uses a frameless window with a custom titlebar (`src/renderer/src/components/Titlebar.tsx`):
+The app uses a frameless window with a custom titlebar (`src/renderer/src/components/titlebar/Titlebar.tsx`):
 
 - **Frameless**: `frame: false` in BrowserWindow config removes native titlebar
 - **Draggable**: Header uses `-webkit-app-region: drag` for window dragging
@@ -71,3 +71,58 @@ The app uses a frameless window with a custom titlebar (`src/renderer/src/compon
 
 - **One-piece look**: Header and body share the same background (transparent header, no borders)
 - **IconButton styling**: Use `variant="ghost"` with `bg="transparent"` for seamless buttons
+
+## State Management
+
+The app uses React Context for inter-region communication between Titlebar, Sidebar, and MainContent.
+
+### Contexts
+
+- **AppContext** (`src/renderer/src/context/AppContext.tsx`): Global app state (loading, errors)
+  - `useApp()` hook provides: `isLoading`, `error`, `setLoading()`, `setError()`, `clearError()`
+
+- **UIContext** (`src/renderer/src/context/UIContext.tsx`): UI/layout state
+  - `useUI()` hook provides: `sidebar`, `activeView`, `title`, `toggleSidebar()`, `setActiveView()`, `setTitle()`
+
+### Types
+
+Type definitions are in `src/renderer/src/types/`:
+- `app.types.ts`: `AppState`, `AppContextValue`
+- `ui.types.ts`: `UIState`, `UIContextValue`, `ViewId`, `SidebarState`
+
+## Component Organization
+
+Components are organized by region with dedicated folders:
+
+```
+src/renderer/src/components/
+├── titlebar/
+│   ├── Titlebar.tsx      # Window titlebar with controls
+│   ├── useTitlebar.ts    # Hook: title, toggleSidebar
+│   └── index.ts
+├── sidebar/
+│   ├── Sidebar.tsx       # Navigation sidebar
+│   ├── useSidebar.ts     # Hook: isCollapsed, width, navigateTo
+│   └── index.ts
+├── main-content/
+│   ├── MainContent.tsx   # Main content area with header/footer
+│   ├── useMainContent.ts # Hook: activeView, isLoading, error
+│   └── index.ts
+└── ui/                   # Chakra UI snippets
+```
+
+### Region Hooks
+
+Each region has a focused hook that provides a clean API:
+
+- `useTitlebar()`: Access title, toggle sidebar
+- `useSidebar()`: Collapse state, width, navigation (`navigateTo()`)
+- `useMainContent()`: Active view, loading state, errors
+
+### Import Pattern
+
+Use barrel exports for clean imports:
+```typescript
+import { Sidebar, useSidebar } from './components/sidebar'
+import { useUI } from './context'
+```

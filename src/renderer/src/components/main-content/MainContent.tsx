@@ -1,10 +1,13 @@
 import { Box, Flex, Text } from '@chakra-ui/react'
+import { useMainContent } from './useMainContent'
 
 interface MainContentProps {
   children?: React.ReactNode
 }
 
 function MainContent({ children }: MainContentProps): React.JSX.Element {
+  const { title, isLoading } = useMainContent()
+
   return (
     <Flex direction="column" flex="1" h="100%" overflow="hidden">
       {/* Content Header */}
@@ -16,13 +19,13 @@ function MainContent({ children }: MainContentProps): React.JSX.Element {
         borderColor="whiteAlpha.100"
       >
         <Text fontSize="lg" fontWeight="semibold">
-          Content Header
+          {title}
         </Text>
       </Box>
 
       {/* Main Content Area */}
       <Box flex="1" overflow="auto" p="6">
-        {children}
+        {isLoading ? <Text color="fg.muted">Loading...</Text> : children}
       </Box>
 
       {/* Content Footer */}
