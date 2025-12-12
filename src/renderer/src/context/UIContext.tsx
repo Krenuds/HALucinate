@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback, useMemo, ReactNode } from 'react'
-import type { UIContextValue, UIState, ViewId } from '@renderer/types'
+import type { UIContextValue, UIState, ViewId, ImageFile } from '@renderer/types'
 
 const initialState: UIState = {
   sidebar: {
@@ -7,7 +7,9 @@ const initialState: UIState = {
     width: 280
   },
   activeView: 'home',
-  title: 'Mr. Parsypants'
+  title: 'Mr. Parsypants',
+  images: [],
+  selectedPaths: []
 }
 
 const UIContext = createContext<UIContextValue | null>(null)
@@ -46,6 +48,21 @@ export function UIProvider({ children }: { children: ReactNode }): React.JSX.Ele
     setState((prev) => ({ ...prev, title }))
   }, [])
 
+  // Image/selection actions
+  const setImages = useCallback((images: ImageFile[]) => {
+    setState((prev) => ({ ...prev, images }))
+  }, [])
+
+  const setSelectedPaths = useCallback((selectedPaths: string[]) => {
+    setState((prev) => ({ ...prev, selectedPaths }))
+  }, [])
+
+  // Derived: selected images from paths
+  const selectedImages = useMemo(() => {
+    const pathSet = new Set(state.selectedPaths)
+    return state.images.filter((img) => pathSet.has(img.path))
+  }, [state.images, state.selectedPaths])
+
   const value = useMemo<UIContextValue>(
     () => ({
       ...state,
@@ -53,9 +70,12 @@ export function UIProvider({ children }: { children: ReactNode }): React.JSX.Ele
       setSidebarCollapsed,
       setSidebarWidth,
       setActiveView,
-      setTitle
+      setTitle,
+      setImages,
+      setSelectedPaths,
+      selectedImages
     }),
-    [state, toggleSidebar, setSidebarCollapsed, setSidebarWidth, setActiveView, setTitle]
+    [state, toggleSidebar, setSidebarCollapsed, setSidebarWidth, setActiveView, setTitle, setImages, setSelectedPaths, selectedImages]
   )
 
   return <UIContext.Provider value={value}>{children}</UIContext.Provider>

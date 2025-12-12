@@ -6,7 +6,7 @@ import { useApp } from '@renderer/context'
  * Combines app state (loading/errors) with UI state (active view).
  */
 export function useMainContent() {
-  const { activeView, title, setTitle } = useUI()
+  const { activeView, title, setTitle, selectedImages } = useUI()
   const { isLoading, error, setLoading, setError, clearError } = useApp()
 
   return {
@@ -14,6 +14,9 @@ export function useMainContent() {
     activeView,
     title,
     setTitle,
+
+    // Selected images from sidebar
+    selectedImages,
 
     // App state
     isLoading,

@@ -1,22 +1,30 @@
 import { useEffect, useState } from 'react'
-import { Flex, Text } from '@chakra-ui/react'
+import { Flex } from '@chakra-ui/react'
 import { Titlebar } from './components/titlebar'
 import { Sidebar } from './components/sidebar'
 import { MainContent } from './components/main-content'
 import { LoginPage } from './components/login'
 import { AppProvider, UIProvider, useUI } from './context'
 
-function AppLayout(): React.JSX.Element {
-  const { title } = useUI()
+interface AppLayoutProps {
+  projectFolder: string
+}
+
+function AppLayout({ projectFolder }: AppLayoutProps): React.JSX.Element {
+  const { title, setTitle } = useUI()
+
+  // Set title to folder name on mount
+  useEffect(() => {
+    const folderName = projectFolder.split(/[/\\]/).pop() || projectFolder
+    setTitle(folderName)
+  }, [projectFolder, setTitle])
 
   return (
     <Flex direction="column" h="100vh">
       <Titlebar title={title} />
       <Flex flex="1" overflow="hidden">
         <Sidebar />
-        <MainContent>
-          <Text color="fg.muted">Main content goes here</Text>
-        </MainContent>
+        <MainContent />
       </Flex>
     </Flex>
   )
@@ -44,7 +52,7 @@ function App(): React.JSX.Element {
   return (
     <AppProvider>
       <UIProvider>
-        <AppLayout />
+        <AppLayout projectFolder={projectFolder} />
       </UIProvider>
     </AppProvider>
   )

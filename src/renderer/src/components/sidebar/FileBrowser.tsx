@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Box, Text, HStack, Spinner, Image, Listbox, createListCollection } from '@chakra-ui/react'
 import { Tooltip } from '../ui/tooltip'
-import type { ImageFile } from '../../../../preload/index.d'
+import { useUI } from '@renderer/context'
 
 function getLocalImageUrl(filePath: string): string {
   // Convert local file path to custom protocol URL
@@ -40,9 +40,8 @@ function extractPrefix(filename: string): string | null {
 }
 
 function FileBrowser(): React.JSX.Element {
-  const [images, setImages] = useState<ImageFile[]>([])
+  const { images, setImages, selectedPaths, setSelectedPaths } = useUI()
   const [loading, setLoading] = useState(true)
-  const [selectedPaths, setSelectedPaths] = useState<string[]>([])
 
   const loadImages = async (): Promise<void> => {
     try {
