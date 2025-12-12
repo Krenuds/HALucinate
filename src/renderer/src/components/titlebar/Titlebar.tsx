@@ -1,4 +1,4 @@
-import { HStack, Heading, IconButton, Spacer, Box } from '@chakra-ui/react'
+import { HStack, Text, IconButton, Spacer, Box } from '@chakra-ui/react'
 import { VscChromeMinimize, VscChromeMaximize, VscChromeClose, VscFolderOpened } from 'react-icons/vsc'
 import { Tooltip } from '@renderer/components/ui/tooltip'
 
@@ -18,30 +18,30 @@ function Titlebar({ onChangeFolder }: TitlebarProps): React.JSX.Element {
       w="100%"
       bg="bg"
       borderBottomWidth="1px"
-      borderColor="whiteAlpha.100"
+      borderColor="whiteAlpha.300"
       position="relative"
       zIndex="banner"
       css={{ WebkitAppRegion: 'drag' }}
     >
-      <HStack h="10" pl="4" pr="0" gap="0">
-        <Heading size="sm" fontWeight="semibold">
+      <HStack h="8" pl="3" pr="0" gap="0">
+        <Text fontFamily="mono" fontSize="xs" fontWeight="bold" textTransform="uppercase" letterSpacing="wider">
           Mr. Parsyface
-        </Heading>
+        </Text>
         <Spacer />
 
         {/* Folder button - only show if handler provided */}
         {onChangeFolder && (
-          <HStack gap="0" mr="2" css={{ WebkitAppRegion: 'no-drag' }}>
+          <HStack gap="0" mr="1" css={{ WebkitAppRegion: 'no-drag' }}>
             <Tooltip content="Change project folder" positioning={{ placement: 'bottom' }}>
               <IconButton
                 aria-label="Change project folder"
                 variant="ghost"
-                size="sm"
-                rounded="sm"
+                size="xs"
+                rounded="none"
                 bg="transparent"
                 color="fg.muted"
                 onClick={onChangeFolder}
-                _hover={{ bg: 'whiteAlpha.200', color: 'fg' }}
+                _hover={{ bg: 'whiteAlpha.300', color: 'fg' }}
               >
                 <VscFolderOpened />
               </IconButton>
@@ -54,37 +54,37 @@ function Titlebar({ onChangeFolder }: TitlebarProps): React.JSX.Element {
           <IconButton
             aria-label="Minimize"
             variant="ghost"
-            size="sm"
-            w="12"
-            h="10"
+            size="xs"
+            w="10"
+            h="8"
             rounded="none"
             bg="transparent"
             color="fg.muted"
             onClick={handleMinimize}
-            _hover={{ bg: 'whiteAlpha.200', color: 'fg' }}
+            _hover={{ bg: 'whiteAlpha.300', color: 'fg' }}
           >
             <VscChromeMinimize />
           </IconButton>
           <IconButton
             aria-label="Maximize"
             variant="ghost"
-            size="sm"
-            w="12"
-            h="10"
+            size="xs"
+            w="10"
+            h="8"
             rounded="none"
             bg="transparent"
             color="fg.muted"
             onClick={handleMaximize}
-            _hover={{ bg: 'whiteAlpha.200', color: 'fg' }}
+            _hover={{ bg: 'whiteAlpha.300', color: 'fg' }}
           >
             <VscChromeMaximize />
           </IconButton>
           <IconButton
             aria-label="Close"
             variant="ghost"
-            size="sm"
-            w="12"
-            h="10"
+            size="xs"
+            w="10"
+            h="8"
             rounded="none"
             bg="transparent"
             color="fg.muted"

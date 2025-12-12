@@ -14,17 +14,22 @@ function MainContent(): React.JSX.Element {
   return (
     <Flex direction="column" flex="1" h="100%" overflow="hidden">
       {/* Content Header */}
-      <Box as="header" px="6" py="3" borderBottomWidth="1px" borderColor="whiteAlpha.100">
+      <Box as="header" px="3" py="2" borderBottomWidth="1px" borderColor="whiteAlpha.300">
         <HStack justify="space-between">
-          <Text fontSize="lg" fontWeight="semibold">
-            {folderName || 'No folder selected'}
+          <Text fontFamily="mono" fontSize="sm" fontWeight="bold" textTransform="uppercase" letterSpacing="wider">
+            {folderName || '-- no folder --'}
           </Text>
           <Button
-            size="sm"
+            size="xs"
             variant="outline"
+            colorPalette="gray"
+            fontFamily="mono"
+            borderRadius="none"
+            textTransform="uppercase"
+            letterSpacing="wide"
             disabled={selectedImages.length === 0 || ocr.isRunning}
             loading={ocr.isRunning}
-            loadingText="Running..."
+            loadingText="..."
             onClick={handleRunOCR}
           >
             <LuScanText />
@@ -34,25 +39,27 @@ function MainContent(): React.JSX.Element {
       </Box>
 
       {/* Main Content Area */}
-      <Box flex="1" overflow="auto" p="4">
+      <Box flex="1" overflow="auto" p="3">
         {isLoading ? (
-          <Text color="fg.muted">Loading...</Text>
+          <Text fontFamily="mono" fontSize="xs" color="fg.muted">loading...</Text>
         ) : selectedImages.length === 0 ? (
           <Flex h="100%" align="center" justify="center">
-            <Text color="fg.muted">Select images from the sidebar</Text>
+            <Text fontFamily="mono" fontSize="xs" color="fg.muted">-- select images from sidebar --</Text>
           </Flex>
         ) : (
           <Grid
             templateColumns="repeat(3, 1fr)"
-            gap="4"
+            gap="2"
           >
             {selectedImages.map((image) => (
               <Box
                 key={image.path}
-                bg="whiteAlpha.50"
-                rounded="md"
+                bg="black"
+                rounded="none"
                 overflow="hidden"
-                _hover={{ bg: 'whiteAlpha.100' }}
+                border="1px solid"
+                borderColor="whiteAlpha.300"
+                _hover={{ borderColor: 'whiteAlpha.500' }}
                 aspectRatio={4 / 3}
                 position="relative"
               >
@@ -73,28 +80,44 @@ function MainContent(): React.JSX.Element {
       </Box>
 
       {/* Content Footer */}
-      <Box as="footer" px="6" py="3" borderTopWidth="1px" borderColor="whiteAlpha.100">
+      <Box as="footer" px="3" py="2" borderTopWidth="1px" borderColor="whiteAlpha.300">
         <HStack justify="space-between">
-          <Text fontSize="sm" color="fg.muted">
+          <Text fontFamily="mono" fontSize="xs" color="fg.muted">
             {selectedImages.length > 0
-              ? `${selectedImages.length} image${selectedImages.length !== 1 ? 's' : ''} selected`
-              : 'No selection'}
+              ? `[${selectedImages.length}] selected`
+              : '-- none --'}
           </Text>
 
           {ocr.isRunning && (
             <HStack gap="2">
-              <Text fontSize="sm" color="fg.muted">
-                Processing {ocr.progress.currentIndex + 1} of {ocr.progress.totalImages}...
+              <Text fontFamily="mono" fontSize="xs" color="fg.muted">
+                [{ocr.progress.currentIndex + 1}/{ocr.progress.totalImages}]
               </Text>
-              <Button size="xs" variant="ghost" colorPalette="red" onClick={handleCancelOCR}>
+              <Button
+                size="xs"
+                variant="outline"
+                colorPalette="gray"
+                fontFamily="mono"
+                borderRadius="none"
+                textTransform="uppercase"
+                onClick={handleCancelOCR}
+              >
                 Cancel
               </Button>
             </HStack>
           )}
 
           {ocr.results.length > 0 && !ocr.isRunning && (
-            <Button size="xs" variant="ghost" onClick={() => setOCRDrawerOpen(true)}>
-              View Results ({ocr.results.length})
+            <Button
+              size="xs"
+              variant="outline"
+              colorPalette="gray"
+              fontFamily="mono"
+              borderRadius="none"
+              textTransform="uppercase"
+              onClick={() => setOCRDrawerOpen(true)}
+            >
+              Results [{ocr.results.length}]
             </Button>
           )}
         </HStack>

@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading, Text, VStack } from '@chakra-ui/react'
+import { Box, Button, Flex, Text, VStack } from '@chakra-ui/react'
 import { LuFolderOpen } from 'react-icons/lu'
 import { Titlebar } from '../titlebar'
 
@@ -24,16 +24,18 @@ function LoginPage({ onFolderSelected }: LoginPageProps): React.JSX.Element {
         justifyContent="center"
         bg="bg"
       >
-        <VStack gap="6" textAlign="center" maxW="400px" px="4">
-          <VStack gap="2">
-            <Heading size="2xl">Welcome</Heading>
-            <Text color="fg.muted">
-              To get started, please select your project folder.
+        <VStack gap="4" textAlign="center" maxW="400px" px="4">
+          <VStack gap="1">
+            <Text fontFamily="mono" fontSize="xl" fontWeight="bold" textTransform="uppercase" letterSpacing="wider">
+              Welcome
+            </Text>
+            <Text fontFamily="mono" fontSize="xs" color="fg.muted">
+              select project folder to continue
             </Text>
           </VStack>
 
           <Button
-            size="lg"
+            size="sm"
             variant="outline"
             colorPalette="gray"
             fontFamily="mono"

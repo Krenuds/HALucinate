@@ -80,17 +80,17 @@ function FileBrowser(): React.JSX.Element {
 
   if (loading) {
     return (
-      <Box py="4" textAlign="center">
-        <Spinner size="sm" color="fg.muted" />
+      <Box py="2" textAlign="center">
+        <Spinner size="xs" color="fg.muted" />
       </Box>
     )
   }
 
   if (images.length === 0) {
     return (
-      <Box py="4">
-        <Text fontSize="xs" color="fg.muted" textAlign="center">
-          No images found
+      <Box py="2">
+        <Text fontFamily="mono" fontSize="xs" color="fg.muted" textAlign="center">
+          -- empty --
         </Text>
       </Box>
     )
@@ -114,23 +114,24 @@ function FileBrowser(): React.JSX.Element {
         overflowX="hidden"
         css={{
           '&::-webkit-scrollbar': {
-            width: '8px'
+            width: '6px'
           },
           '&::-webkit-scrollbar-track': {
-            background: 'transparent'
+            background: 'rgba(255, 255, 255, 0.05)'
           },
           '&::-webkit-scrollbar-thumb': {
-            background: 'rgba(255, 255, 255, 0.2)',
-            borderRadius: '4px'
+            background: 'rgba(255, 255, 255, 0.3)',
+            borderRadius: '0'
           },
           '&::-webkit-scrollbar-thumb:hover': {
-            background: 'rgba(255, 255, 255, 0.3)'
+            background: 'rgba(255, 255, 255, 0.5)'
           }
         }}
       >
         {images.map((image) => {
           const prefix = extractPrefix(image.name)
           const imageUrl = getLocalImageUrl(image.path)
+          const isSelected = selectedPaths.includes(image.path)
           return (
             <Tooltip
               key={image.path}
@@ -138,42 +139,48 @@ function FileBrowser(): React.JSX.Element {
               closeDelay={0}
               positioning={{ placement: 'right', gutter: 8 }}
               content={
-                <Box p="1">
+                <Box p="0">
                   <Image
                     src={imageUrl}
                     alt={image.name}
                     maxW="600px"
                     maxH="400px"
                     objectFit="contain"
-                    rounded="md"
+                    rounded="none"
+                    border="1px solid"
+                    borderColor="whiteAlpha.300"
                   />
                 </Box>
               }
               contentProps={{
                 css: {
                   bg: 'transparent',
-                  boxShadow: 'lg',
+                  boxShadow: 'none',
                   p: 0
                 }
               }}
             >
               <Listbox.Item
                 item={image}
-                py="1"
-                px="2"
-                rounded="sm"
+                py="0.5"
+                px="1"
+                rounded="none"
                 cursor="pointer"
-                _hover={{ bg: 'whiteAlpha.100' }}
-                _selected={{ bg: 'blue.900/50' }}
+                fontFamily="mono"
+                _hover={{ bg: 'whiteAlpha.200' }}
+                _selected={{ bg: 'whiteAlpha.200', color: 'fg' }}
               >
-                <HStack gap="1.5" flex="1">
-                  <Text fontSize="sm" color="fg" truncate title={image.name}>
+                <HStack gap="1" flex="1">
+                  <Text fontFamily="mono" fontSize="xs" color="fg.muted" w="2">
+                    {isSelected ? '>' : ' '}
+                  </Text>
+                  <Text fontFamily="mono" fontSize="xs" color="fg" truncate title={image.name}>
                     {formatTimestamp(image.modifiedAt)}
                   </Text>
                   {prefix && (
                     <>
-                      <Text fontSize="sm" color="fg.muted">|</Text>
-                      <Text fontSize="sm" color="fg.muted" truncate>
+                      <Text fontFamily="mono" fontSize="xs" color="fg.muted">|</Text>
+                      <Text fontFamily="mono" fontSize="xs" color="fg.muted" truncate>
                         {prefix}
                       </Text>
                     </>

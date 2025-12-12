@@ -12,15 +12,24 @@ function Sidebar(): React.JSX.Element {
       minW={isCollapsed ? '0px' : `${width}px`}
       h="100%"
       borderRightWidth={isCollapsed ? '0' : '1px'}
-      borderColor="whiteAlpha.100"
-      p={isCollapsed ? '0' : '4'}
+      borderColor="whiteAlpha.300"
+      p={isCollapsed ? '0' : '2'}
       overflow="hidden"
       transition="all 0.2s"
       display="flex"
       flexDirection="column"
     >
-      <VStack align="stretch" gap="2" flex="1" minH="0">
-        <Text fontSize="sm" color="fg.muted" fontWeight="medium" px="2">
+      <VStack align="stretch" gap="1" flex="1" minH="0">
+        <Text
+          fontFamily="mono"
+          fontSize="xs"
+          color="fg.muted"
+          fontWeight="bold"
+          textTransform="uppercase"
+          letterSpacing="wider"
+          px="1"
+          py="1"
+        >
           Images
         </Text>
         <Box
@@ -29,17 +38,17 @@ function Sidebar(): React.JSX.Element {
           overflowX="hidden"
           css={{
             '&::-webkit-scrollbar': {
-              width: '8px'
+              width: '6px'
             },
             '&::-webkit-scrollbar-track': {
-              background: 'transparent'
+              background: 'rgba(255, 255, 255, 0.05)'
             },
             '&::-webkit-scrollbar-thumb': {
-              background: 'rgba(255, 255, 255, 0.2)',
-              borderRadius: '4px'
+              background: 'rgba(255, 255, 255, 0.3)',
+              borderRadius: '0'
             },
             '&::-webkit-scrollbar-thumb:hover': {
-              background: 'rgba(255, 255, 255, 0.3)'
+              background: 'rgba(255, 255, 255, 0.5)'
             }
           }}
         >

@@ -3,7 +3,6 @@ import {
   VStack,
   HStack,
   Text,
-  Badge,
   Code,
   Button,
   IconButton,
@@ -29,13 +28,22 @@ function OCRResultsDrawer({ open, onOpenChange, results }: OCRResultsDrawerProps
       <Portal>
         <Drawer.Backdrop />
         <Drawer.Positioner>
-          <Drawer.Content>
-            <Drawer.Header>
+          <Drawer.Content borderRadius="none" borderLeft="1px solid" borderColor="whiteAlpha.300">
+            <Drawer.Header borderBottomWidth="1px" borderColor="whiteAlpha.300" py="2">
               <HStack justify="space-between" flex="1">
-                <Drawer.Title>OCR Results</Drawer.Title>
+                <Drawer.Title fontFamily="mono" fontSize="sm" fontWeight="bold" textTransform="uppercase" letterSpacing="wider">
+                  OCR Results
+                </Drawer.Title>
                 <Clipboard.Root value={totalText}>
                   <Clipboard.Trigger asChild>
-                    <Button size="sm" variant="outline">
+                    <Button
+                      size="xs"
+                      variant="outline"
+                      colorPalette="gray"
+                      fontFamily="mono"
+                      borderRadius="none"
+                      textTransform="uppercase"
+                    >
                       <Clipboard.Indicator copied={<LuCheck />}>
                         <LuCopy />
                       </Clipboard.Indicator>
@@ -46,30 +54,30 @@ function OCRResultsDrawer({ open, onOpenChange, results }: OCRResultsDrawerProps
               </HStack>
             </Drawer.Header>
 
-            <Drawer.Body>
-              <VStack gap="4" align="stretch">
+            <Drawer.Body py="2" px="3">
+              <VStack gap="2" align="stretch">
                 {results.map((result) => (
                   <Box
                     key={result.path}
-                    p="3"
-                    bg="whiteAlpha.50"
-                    rounded="md"
+                    p="2"
+                    bg="transparent"
+                    rounded="none"
                     borderWidth="1px"
-                    borderColor="whiteAlpha.100"
+                    borderColor="whiteAlpha.300"
                   >
-                    <HStack justify="space-between" mb="2">
-                      <Text fontSize="sm" fontWeight="medium" truncate maxW="200px">
+                    <HStack justify="space-between" mb="1">
+                      <Text fontFamily="mono" fontSize="xs" fontWeight="medium" truncate maxW="200px">
                         {result.path.split(/[/\\]/).pop()}
                       </Text>
-                      <HStack gap="2">
+                      <HStack gap="1">
                         {result.error ? (
-                          <Badge colorPalette="red">Error</Badge>
+                          <Text fontFamily="mono" fontSize="xs" color="red.400">[ERR]</Text>
                         ) : (
-                          <Badge colorPalette="green">{Math.round(result.confidence)}%</Badge>
+                          <Text fontFamily="mono" fontSize="xs" color="fg.muted">[{Math.round(result.confidence)}%]</Text>
                         )}
                         <Clipboard.Root value={result.text}>
                           <Clipboard.Trigger asChild>
-                            <IconButton size="xs" variant="ghost">
+                            <IconButton size="xs" variant="ghost" rounded="none">
                               <Clipboard.Indicator copied={<LuCheck />}>
                                 <LuCopy />
                               </Clipboard.Indicator>
@@ -80,7 +88,7 @@ function OCRResultsDrawer({ open, onOpenChange, results }: OCRResultsDrawerProps
                     </HStack>
 
                     {result.error ? (
-                      <Text fontSize="sm" color="red.400">
+                      <Text fontFamily="mono" fontSize="xs" color="red.400">
                         {result.error}
                       </Text>
                     ) : (
@@ -88,14 +96,18 @@ function OCRResultsDrawer({ open, onOpenChange, results }: OCRResultsDrawerProps
                         display="block"
                         whiteSpace="pre-wrap"
                         p="2"
+                        fontFamily="mono"
                         fontSize="xs"
-                        bg="blackAlpha.300"
+                        bg="blackAlpha.500"
+                        borderRadius="none"
+                        border="1px solid"
+                        borderColor="whiteAlpha.200"
                         maxH="200px"
                         overflow="auto"
                         userSelect="text"
                         cursor="text"
                       >
-                        {result.text || '(No text detected)'}
+                        {result.text || '-- no text --'}
                       </Code>
                     )}
                   </Box>
@@ -103,14 +115,14 @@ function OCRResultsDrawer({ open, onOpenChange, results }: OCRResultsDrawerProps
               </VStack>
             </Drawer.Body>
 
-            <Drawer.Footer>
-              <Text fontSize="sm" color="fg.muted">
-                {results.length} image{results.length !== 1 ? 's' : ''} processed
+            <Drawer.Footer borderTopWidth="1px" borderColor="whiteAlpha.300" py="2">
+              <Text fontFamily="mono" fontSize="xs" color="fg.muted">
+                [{results.length}] processed
               </Text>
             </Drawer.Footer>
 
             <Drawer.CloseTrigger asChild>
-              <CloseButton size="sm" />
+              <CloseButton size="xs" rounded="none" />
             </Drawer.CloseTrigger>
           </Drawer.Content>
         </Drawer.Positioner>
