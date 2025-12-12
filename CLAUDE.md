@@ -63,6 +63,7 @@ The app uses a native fs-based configuration system in the main process (`src/ma
 
 - **Current settings**:
   - `windowBounds`: Persists window position (x, y) and size (width, height)
+  - `projectFolder`: Path to the project folder (string or null if not set)
 
 - **Adding new settings**: Extend the `AppConfig` interface and `defaultConfig` object:
   ```typescript

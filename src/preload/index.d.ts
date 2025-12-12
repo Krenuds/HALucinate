@@ -4,6 +4,8 @@ interface WindowAPI {
   windowMinimize: () => void
   windowMaximize: () => void
   windowClose: () => void
+  getProjectFolder: () => Promise<string | null>
+  selectProjectFolder: () => Promise<string | null>
 }
 
 declare global {

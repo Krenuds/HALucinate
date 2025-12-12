@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain, screen } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, screen, dialog } from 'electron'
 import { join } from 'path'
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
@@ -13,6 +13,7 @@ interface WindowBounds {
 
 interface AppConfig {
   windowBounds: WindowBounds
+  projectFolder: string | null
 }
 
 const defaultConfig: AppConfig = {
@@ -21,7 +22,8 @@ const defaultConfig: AppConfig = {
     y: 0,
     width: 900,
     height: 670
-  }
+  },
+  projectFolder: null
 }
 
 function getConfigPath(): string {
@@ -156,6 +158,33 @@ app.whenReady().then(() => {
   ipcMain.on('window-close', () => {
     const win = BrowserWindow.getFocusedWindow()
     win?.close()
+  })
+
+  // Project folder handlers
+  ipcMain.handle('get-project-folder', () => {
+    const config = loadConfig()
+    return config.projectFolder
+  })
+
+  ipcMain.handle('select-project-folder', async () => {
+    const win = BrowserWindow.getFocusedWindow()
+    if (!win) return null
+
+    const result = await dialog.showOpenDialog(win, {
+      properties: ['openDirectory'],
+      title: 'Select Project Folder'
+    })
+
+    if (result.canceled || result.filePaths.length === 0) {
+      return null
+    }
+
+    const folderPath = result.filePaths[0]
+    const config = loadConfig()
+    config.projectFolder = folderPath
+    saveConfig(config)
+
+    return folderPath
   })
 
   createWindow()

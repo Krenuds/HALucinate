@@ -1,9 +1,11 @@
 import { HStack, Heading, IconButton, Spacer, Box } from '@chakra-ui/react'
 import { VscChromeMinimize, VscChromeMaximize, VscChromeClose } from 'react-icons/vsc'
-import { useTitlebar } from './useTitlebar'
 
-function Titlebar(): React.JSX.Element {
-  const { title } = useTitlebar()
+interface TitlebarProps {
+  title?: string
+}
+
+function Titlebar({ title = 'Mr. Parsypants' }: TitlebarProps): React.JSX.Element {
 
   const handleMinimize = (): void => window.api.windowMinimize()
   const handleMaximize = (): void => window.api.windowMaximize()
