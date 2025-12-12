@@ -3,7 +3,53 @@ import { pathToFileURL } from 'url'
 import { join } from 'path'
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, statSync } from 'fs'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
+import chokidar, { type FSWatcher } from 'chokidar'
 import icon from '../../resources/icon.png?asset'
+
+// File watcher instance
+let fileWatcher: FSWatcher | null = null
+let mainWindow: BrowserWindow | null = null
+
+// Start watching a folder for image changes
+function startFileWatcher(folderPath: string): void {
+  // Stop existing watcher if any
+  if (fileWatcher) {
+    fileWatcher.close()
+    fileWatcher = null
+  }
+
+  // Watch folder and immediate subfolders for image files
+  fileWatcher = chokidar.watch(folderPath, {
+    ignored: /(^|[\/\\])\../, // ignore dotfiles
+    persistent: true,
+    depth: 1, // watch root and one level of subfolders
+    ignoreInitial: true // don't fire events for existing files
+  })
+
+  const notifyChange = (): void => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send('files-changed')
+    }
+  }
+
+  // Debounce to avoid rapid-fire updates
+  let debounceTimer: NodeJS.Timeout | null = null
+  const debouncedNotify = (): void => {
+    if (debounceTimer) clearTimeout(debounceTimer)
+    debounceTimer = setTimeout(notifyChange, 100)
+  }
+
+  fileWatcher
+    .on('add', (path) => {
+      if (isImageFile(path)) debouncedNotify()
+    })
+    .on('unlink', (path) => {
+      if (isImageFile(path)) debouncedNotify()
+    })
+    .on('change', (path) => {
+      if (isImageFile(path)) debouncedNotify()
+    })
+}
 
 // Supported image extensions
 const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.bmp', '.tiff', '.tif']
@@ -143,7 +189,7 @@ function createWindow(): void {
   const bounds = getWindowBounds()
 
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  const win = new BrowserWindow({
     ...bounds,
     show: false,
     autoHideMenuBar: true,
@@ -155,24 +201,25 @@ function createWindow(): void {
       sandbox: false
     }
   })
+  mainWindow = win
 
   // Save window bounds on move or resize
   const saveBounds = (): void => {
-    if (!mainWindow.isMaximized() && !mainWindow.isMinimized()) {
+    if (!win.isMaximized() && !win.isMinimized()) {
       const config = loadConfig()
-      config.windowBounds = mainWindow.getBounds()
+      config.windowBounds = win.getBounds()
       saveConfig(config)
     }
   }
 
-  mainWindow.on('resize', saveBounds)
-  mainWindow.on('move', saveBounds)
+  win.on('resize', saveBounds)
+  win.on('move', saveBounds)
 
-  mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
+  win.on('ready-to-show', () => {
+    win.show()
   })
 
-  mainWindow.webContents.setWindowOpenHandler((details) => {
+  win.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url)
     return { action: 'deny' }
   })
@@ -180,9 +227,15 @@ function createWindow(): void {
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
+    win.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+    win.loadFile(join(__dirname, '../renderer/index.html'))
+  }
+
+  // Start file watcher if project folder is already configured
+  const config = loadConfig()
+  if (config.projectFolder && existsSync(config.projectFolder)) {
+    startFileWatcher(config.projectFolder)
   }
 }
 
@@ -271,6 +324,9 @@ app.whenReady().then(() => {
     const config = loadConfig()
     config.projectFolder = folderPath
     saveConfig(config)
+
+    // Start watching the new folder
+    startFileWatcher(folderPath)
 
     return folderPath
   })

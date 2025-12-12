@@ -23,7 +23,26 @@ function Sidebar(): React.JSX.Element {
         <Text fontSize="sm" color="fg.muted" fontWeight="medium" px="2">
           Images
         </Text>
-        <Box flex="1" overflowY="auto" overflowX="hidden">
+        <Box
+          flex="1"
+          overflowY="auto"
+          overflowX="hidden"
+          css={{
+            '&::-webkit-scrollbar': {
+              width: '8px'
+            },
+            '&::-webkit-scrollbar-track': {
+              background: 'transparent'
+            },
+            '&::-webkit-scrollbar-thumb': {
+              background: 'rgba(255, 255, 255, 0.2)',
+              borderRadius: '4px'
+            },
+            '&::-webkit-scrollbar-thumb:hover': {
+              background: 'rgba(255, 255, 255, 0.3)'
+            }
+          }}
+        >
           <FileBrowser />
         </Box>
       </VStack>

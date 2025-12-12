@@ -43,18 +43,28 @@ function FileBrowser(): React.JSX.Element {
   const [images, setImages] = useState<ImageFile[]>([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    async function loadImages(): Promise<void> {
-      try {
-        const result = await window.api.scanImages()
-        setImages(result)
-      } catch (error) {
-        console.error('Failed to scan images:', error)
-      } finally {
-        setLoading(false)
-      }
+  const loadImages = async (): Promise<void> => {
+    try {
+      const result = await window.api.scanImages()
+      setImages(result)
+    } catch (error) {
+      console.error('Failed to scan images:', error)
+    } finally {
+      setLoading(false)
     }
+  }
+
+  // Initial load
+  useEffect(() => {
     loadImages()
+  }, [])
+
+  // Subscribe to file changes
+  useEffect(() => {
+    const unsubscribe = window.api.onFilesChanged(() => {
+      loadImages()
+    })
+    return unsubscribe
   }, [])
 
   if (loading) {

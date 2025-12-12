@@ -14,6 +14,7 @@ interface WindowAPI {
   getProjectFolder: () => Promise<string | null>
   selectProjectFolder: () => Promise<string | null>
   scanImages: () => Promise<ImageFile[]>
+  onFilesChanged: (callback: () => void) => () => void
 }
 
 declare global {

@@ -10,7 +10,15 @@ const api = {
     electronAPI.ipcRenderer.invoke('get-project-folder'),
   selectProjectFolder: (): Promise<string | null> =>
     electronAPI.ipcRenderer.invoke('select-project-folder'),
-  scanImages: (): Promise<ImageFile[]> => electronAPI.ipcRenderer.invoke('scan-images')
+  scanImages: (): Promise<ImageFile[]> => electronAPI.ipcRenderer.invoke('scan-images'),
+  onFilesChanged: (callback: () => void): (() => void) => {
+    const handler = (): void => callback()
+    electronAPI.ipcRenderer.on('files-changed', handler)
+    // Return unsubscribe function
+    return (): void => {
+      electronAPI.ipcRenderer.removeListener('files-changed', handler)
+    }
+  }
 }
 
 interface ImageFile {
