@@ -158,6 +158,27 @@ import { Sidebar, useSidebar } from './components/sidebar'
 import { useUI } from './context'
 ```
 
+## File Browser
+
+The sidebar contains a file browser (`src/renderer/src/components/sidebar/FileBrowser.tsx`) that displays images from the project folder.
+
+### Selection Behavior
+
+Uses Chakra UI's `Listbox` component with `selectionMode="extended"` for standard file-browser selection:
+
+| Action | Behavior |
+|--------|----------|
+| Click | Select single item, deselect others |
+| Ctrl+Click | Toggle item in selection |
+| Shift+Click | Select contiguous range |
+
+- Selected items stored in `selectedPaths` state (array of file paths)
+- Selection highlighted with muted blue (`blue.900/50`)
+- Collection created via `createListCollection()` with `itemToValue: (item) => item.path`
+
+### Image Preview
+
+Hovering over an item shows a tooltip preview of the image (max 600x400px) using the `local-image://` custom protocol registered in main process.
 
 **NEXT STEPS**
 - READ LATEST 4 GIT COMMIT COMMENTS IN FULL RIGHT NOW
