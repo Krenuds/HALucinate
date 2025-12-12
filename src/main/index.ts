@@ -10,6 +10,8 @@ function createWindow(): void {
     height: 670,
     show: false,
     autoHideMenuBar: true,
+    frame: false,
+    titleBarStyle: 'hidden',
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
@@ -51,6 +53,26 @@ app.whenReady().then(() => {
 
   // IPC test
   ipcMain.on('ping', () => console.log('pong'))
+
+  // Window control handlers
+  ipcMain.on('window-minimize', () => {
+    const win = BrowserWindow.getFocusedWindow()
+    win?.minimize()
+  })
+
+  ipcMain.on('window-maximize', () => {
+    const win = BrowserWindow.getFocusedWindow()
+    if (win?.isMaximized()) {
+      win.unmaximize()
+    } else {
+      win?.maximize()
+    }
+  })
+
+  ipcMain.on('window-close', () => {
+    const win = BrowserWindow.getFocusedWindow()
+    win?.close()
+  })
 
   createWindow()
 
