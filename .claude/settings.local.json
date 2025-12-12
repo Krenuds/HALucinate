@@ -4,7 +4,14 @@
       "Bash(git -C \"C:\\Users\\donth\\OneDrive\\Documents\\HALucinate\" status)",
       "Bash(git -C \"C:\\Users\\donth\\OneDrive\\Documents\\HALucinate\" diff)",
       "Bash(git -C \"C:\\Users\\donth\\OneDrive\\Documents\\HALucinate\" log --oneline -5)",
-      "Bash(git -C \"C:\\Users\\donth\\OneDrive\\Documents\\HALucinate\" add .)"
+      "Bash(git -C \"C:\\Users\\donth\\OneDrive\\Documents\\HALucinate\" add .)",
+      "Bash(git -C \"C:\\Users\\donth\\OneDrive\\Documents\\HALucinate\" commit -m \"$(cat <<''EOF''\nInitial commit: Mr. Parsypants Electron application\n\nProject setup:\n- Electron application scaffolded with electron-vite\n- React 19 + TypeScript for the renderer process\n- Three-process architecture (main, preload, renderer)\n\nFront-end changes:\n- Cleared default electron-vite boilerplate from App.tsx\n- Replaced demo content with \"Mr. Parsypants\" title\n- Preserved IPC example: button sends ''ping'' to main process\n- Simplified main.css, removed unused styles (logo, versions, tips, etc.)\n- Kept base.css with theme variables intact\n\nNote: Versions.tsx component and electron.svg are now unused but\nretained for reference. The IPC handler in main/index.ts responds\nto ''ping'' messages from the renderer.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n)\")",
+      "WebSearch",
+      "WebFetch(domain:chakra-ui.com)",
+      "Bash(npm i:*)",
+      "Bash(npx @chakra-ui/cli snippet add:*)",
+      "mcp__chakra-ui__get_component_example",
+      "Bash(npm run typecheck:*)"
     ]
   }
 }
