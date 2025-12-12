@@ -1,7 +1,7 @@
 import { Box, Flex, Text, Grid, Image, HStack, Button } from '@chakra-ui/react'
 import { LuScanText } from 'react-icons/lu'
 import { useMainContent } from './useMainContent'
-import OCRResultsDrawer from './OCRResultsDrawer'
+import OCRFlyoutPanel from './OCRFlyoutPanel'
 
 function getLocalImageUrl(filePath: string): string {
   return `local-image://local/${encodeURIComponent(filePath).replace(/%2F/g, '/').replace(/%3A/g, ':')}`
@@ -12,13 +12,14 @@ function MainContent(): React.JSX.Element {
     useMainContent()
 
   return (
-    <Flex direction="column" flex="1" h="100%" overflow="hidden">
+    <Flex direction="column" flex="1" h="100%" overflow="hidden" position="relative">
       {/* Content Header */}
-      <Box as="header" px="3" py="2" borderBottomWidth="1px" borderColor="whiteAlpha.300">
-        <HStack justify="space-between">
+      <Box as="header" px="3" py="0.0" borderBottomWidth="1px" borderColor="whiteAlpha.300">
+        <HStack>
           <Text fontFamily="mono" fontSize="sm" fontWeight="bold" textTransform="uppercase" letterSpacing="wider">
             {folderName || '-- no folder --'}
           </Text>
+          <Text fontFamily="mono" fontSize="sm" color="whiteAlpha.400">|</Text>
           <Button
             size="xs"
             variant="outline"
@@ -106,25 +107,11 @@ function MainContent(): React.JSX.Element {
               </Button>
             </HStack>
           )}
-
-          {ocr.results.length > 0 && !ocr.isRunning && (
-            <Button
-              size="xs"
-              variant="outline"
-              colorPalette="gray"
-              fontFamily="mono"
-              borderRadius="none"
-              textTransform="uppercase"
-              onClick={() => setOCRDrawerOpen(true)}
-            >
-              Results [{ocr.results.length}]
-            </Button>
-          )}
         </HStack>
       </Box>
 
-      {/* OCR Results Drawer */}
-      <OCRResultsDrawer
+      {/* OCR Flyout Panel */}
+      <OCRFlyoutPanel
         open={ocr.drawerOpen}
         onOpenChange={setOCRDrawerOpen}
         results={ocr.results}
