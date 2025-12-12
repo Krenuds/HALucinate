@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C \"C:\\Users\\donth\\OneDrive\\Documents\\HALucinate\" status)",
+      "Bash(git -C \"C:\\Users\\donth\\OneDrive\\Documents\\HALucinate\" diff)",
+      "Bash(git -C \"C:\\Users\\donth\\OneDrive\\Documents\\HALucinate\" log --oneline -5)",
+      "Bash(git -C \"C:\\Users\\donth\\OneDrive\\Documents\\HALucinate\" add .)"
+    ]
+  }
+}
