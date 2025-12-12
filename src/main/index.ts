@@ -302,7 +302,7 @@ app.whenReady().then(() => {
   })
 
   // Set app user model id for windows
-  electronApp.setAppUserModelId('com.electron')
+  electronApp.setAppUserModelId('rashguard.industries.mrparsyface')
 
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
@@ -390,6 +390,13 @@ app.whenReady().then(() => {
       })
 
       ocrWorker = await Tesseract.createWorker('eng')
+
+      // Configure for better accuracy on screenshots
+      await ocrWorker.setParameters({
+        tessedit_pageseg_mode: Tesseract.PSM.SINGLE_BLOCK, // Assume uniform block of text
+        tessedit_char_whitelist:
+          '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz.,!?@#$%&*()-+=:;"\' \n\t/<>[]{}\\|_~`^'
+      })
 
       // Process images sequentially
       for (let i = 0; i < imagePaths.length; i++) {
