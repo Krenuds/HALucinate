@@ -32,7 +32,16 @@ function LoginPage({ onFolderSelected }: LoginPageProps): React.JSX.Element {
             </Text>
           </VStack>
 
-          <Button size="lg" colorPalette="blue" onClick={handleSelectFolder}>
+          <Button
+            size="lg"
+            variant="outline"
+            colorPalette="gray"
+            fontFamily="mono"
+            borderRadius="none"
+            textTransform="uppercase"
+            letterSpacing="wide"
+            onClick={handleSelectFolder}
+          >
             <LuFolderOpen />
             Select Folder
           </Button>
