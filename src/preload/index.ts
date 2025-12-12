@@ -9,7 +9,15 @@ const api = {
   getProjectFolder: (): Promise<string | null> =>
     electronAPI.ipcRenderer.invoke('get-project-folder'),
   selectProjectFolder: (): Promise<string | null> =>
-    electronAPI.ipcRenderer.invoke('select-project-folder')
+    electronAPI.ipcRenderer.invoke('select-project-folder'),
+  scanImages: (): Promise<ImageFile[]> => electronAPI.ipcRenderer.invoke('scan-images')
+}
+
+interface ImageFile {
+  path: string
+  name: string
+  modifiedAt: number
+  folder: string | null
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

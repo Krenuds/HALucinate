@@ -1,5 +1,6 @@
 import { Box, VStack, Text } from '@chakra-ui/react'
 import { useSidebar } from './useSidebar'
+import FileBrowser from './FileBrowser'
 
 function Sidebar(): React.JSX.Element {
   const { isCollapsed, width } = useSidebar()
@@ -15,12 +16,16 @@ function Sidebar(): React.JSX.Element {
       p={isCollapsed ? '0' : '4'}
       overflow="hidden"
       transition="all 0.2s"
+      display="flex"
+      flexDirection="column"
     >
-      <VStack align="stretch" gap="2">
+      <VStack align="stretch" gap="2" flex="1" minH="0">
         <Text fontSize="sm" color="fg.muted" fontWeight="medium" px="2">
-          Navigation
+          Images
         </Text>
-        {/* Sidebar content will go here */}
+        <Box flex="1" overflowY="auto" overflowX="hidden">
+          <FileBrowser />
+        </Box>
       </VStack>
     </Box>
   )

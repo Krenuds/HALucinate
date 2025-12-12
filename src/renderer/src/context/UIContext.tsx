@@ -4,7 +4,7 @@ import type { UIContextValue, UIState, ViewId } from '@renderer/types'
 const initialState: UIState = {
   sidebar: {
     isCollapsed: false,
-    width: 200
+    width: 280
   },
   activeView: 'home',
   title: 'Mr. Parsypants'

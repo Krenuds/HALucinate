@@ -1,8 +1,18 @@
 import { app, shell, BrowserWindow, ipcMain, screen, dialog } from 'electron'
 import { join } from 'path'
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs'
+import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, statSync } from 'fs'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+
+// Supported image extensions
+const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.bmp', '.tiff', '.tif']
+
+interface ImageFile {
+  path: string
+  name: string
+  modifiedAt: number
+  folder: string | null // null for root, folder name for subfolder
+}
 
 interface WindowBounds {
   x: number
@@ -54,6 +64,58 @@ function saveConfig(config: AppConfig): void {
   } catch {
     // Silently fail if we can't save
   }
+}
+
+function isImageFile(filename: string): boolean {
+  const ext = filename.toLowerCase().slice(filename.lastIndexOf('.'))
+  return IMAGE_EXTENSIONS.includes(ext)
+}
+
+function scanForImages(folderPath: string): ImageFile[] {
+  const images: ImageFile[] = []
+
+  try {
+    const entries = readdirSync(folderPath, { withFileTypes: true })
+
+    for (const entry of entries) {
+      const fullPath = join(folderPath, entry.name)
+
+      if (entry.isFile() && isImageFile(entry.name)) {
+        // Image in root folder
+        const stats = statSync(fullPath)
+        images.push({
+          path: fullPath,
+          name: entry.name,
+          modifiedAt: stats.mtimeMs,
+          folder: null
+        })
+      } else if (entry.isDirectory() && !entry.name.startsWith('.')) {
+        // Scan one level deep into subfolders
+        try {
+          const subEntries = readdirSync(fullPath, { withFileTypes: true })
+          for (const subEntry of subEntries) {
+            if (subEntry.isFile() && isImageFile(subEntry.name)) {
+              const subPath = join(fullPath, subEntry.name)
+              const stats = statSync(subPath)
+              images.push({
+                path: subPath,
+                name: subEntry.name,
+                modifiedAt: stats.mtimeMs,
+                folder: entry.name
+              })
+            }
+          }
+        } catch {
+          // Skip folders we can't read
+        }
+      }
+    }
+  } catch {
+    // Return empty array if we can't read the folder
+  }
+
+  // Sort by modification date, most recent first
+  return images.sort((a, b) => b.modifiedAt - a.modifiedAt)
 }
 
 function getWindowBounds(): Partial<WindowBounds> {
@@ -185,6 +247,15 @@ app.whenReady().then(() => {
     saveConfig(config)
 
     return folderPath
+  })
+
+  // Scan project folder for images
+  ipcMain.handle('scan-images', () => {
+    const config = loadConfig()
+    if (!config.projectFolder) {
+      return []
+    }
+    return scanForImages(config.projectFolder)
   })
 
   createWindow()
