@@ -22,7 +22,6 @@ const initialState: UIState = {
     width: 280
   },
   activeView: 'home',
-  title: 'Mr. Parsyface',
   projectFolder: null,
   images: [],
   selectedPaths: [],
@@ -59,10 +58,6 @@ export function UIProvider({ children }: { children: ReactNode }): React.JSX.Ele
   // View actions
   const setActiveView = useCallback((activeView: ViewId) => {
     setState((prev) => ({ ...prev, activeView }))
-  }, [])
-
-  const setTitle = useCallback((title: string) => {
-    setState((prev) => ({ ...prev, title }))
   }, [])
 
   const setProjectFolder = useCallback((projectFolder: string | null) => {
@@ -119,7 +114,6 @@ export function UIProvider({ children }: { children: ReactNode }): React.JSX.Ele
       setSidebarCollapsed,
       setSidebarWidth,
       setActiveView,
-      setTitle,
       setProjectFolder,
       setImages,
       setSelectedPaths,
@@ -131,7 +125,7 @@ export function UIProvider({ children }: { children: ReactNode }): React.JSX.Ele
       setOCRDrawerOpen,
       clearOCRResults
     }),
-    [state, toggleSidebar, setSidebarCollapsed, setSidebarWidth, setActiveView, setTitle, setProjectFolder, setImages, setSelectedPaths, selectedImages, setOCRRunning, setOCRProgress, setOCRResults, setOCRError, setOCRDrawerOpen, clearOCRResults]
+    [state, toggleSidebar, setSidebarCollapsed, setSidebarWidth, setActiveView, setProjectFolder, setImages, setSelectedPaths, selectedImages, setOCRRunning, setOCRProgress, setOCRResults, setOCRError, setOCRDrawerOpen, clearOCRResults]
   )
 
   return <UIContext.Provider value={value}>{children}</UIContext.Provider>

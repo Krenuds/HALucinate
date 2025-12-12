@@ -93,15 +93,18 @@ This app uses **Chakra UI v3** with a dark-only theme.
 The app uses a frameless window with a custom titlebar (`src/renderer/src/components/titlebar/Titlebar.tsx`):
 
 - **Frameless**: `frame: false` in BrowserWindow config removes native titlebar
+- **Static Title**: Always displays "Mr. Parsyface" - title is not dynamic
 - **Draggable**: Header uses `-webkit-app-region: drag` for window dragging
-- **Window Controls**: Custom minimize/maximize/close buttons via IPC:
+- **Window Controls**: Minimize/maximize/close buttons flush to right edge via IPC:
   - Renderer calls `window.api.windowMinimize()`, `windowMaximize()`, `windowClose()`
   - Main process handles via `ipcMain.on('window-minimize' | 'window-maximize' | 'window-close')`
+- **Optional Folder Button**: Pass `onChangeFolder` prop to show folder picker button
+- **Styling**: Background color matches app (`bg="bg"`), bottom border for separation, `zIndex="banner"` ensures visibility
 
 ### Design Principles
 
-- **One-piece look**: Header and body share the same background (transparent header, no borders)
-- **IconButton styling**: Use `variant="ghost"` with `bg="transparent"` for seamless buttons
+- **Consistent titlebar**: Same titlebar component used in both LoginPage and main app
+- **IconButton styling**: Use `variant="ghost"` with `bg="transparent"` and explicit `color="fg.muted"`
 
 ## State Management
 
@@ -113,7 +116,7 @@ The app uses React Context for inter-region communication between Titlebar, Side
   - `useApp()` hook provides: `isLoading`, `error`, `setLoading()`, `setError()`, `clearError()`
 
 - **UIContext** (`src/renderer/src/context/UIContext.tsx`): UI/layout state
-  - `useUI()` hook provides: `sidebar`, `activeView`, `title`, `toggleSidebar()`, `setActiveView()`, `setTitle()`
+  - `useUI()` hook provides: `sidebar`, `activeView`, `projectFolder`, `images`, `selectedPaths`, `ocr`, plus setters
 
 ### Types
 
@@ -128,8 +131,7 @@ Components are organized by region with dedicated folders:
 ```
 src/renderer/src/components/
 ├── titlebar/
-│   ├── Titlebar.tsx      # Window titlebar with controls
-│   ├── useTitlebar.ts    # Hook: title, toggleSidebar
+│   ├── Titlebar.tsx      # Static window titlebar with controls
 │   └── index.ts
 ├── sidebar/
 │   ├── Sidebar.tsx       # Navigation sidebar
@@ -137,7 +139,11 @@ src/renderer/src/components/
 │   └── index.ts
 ├── main-content/
 │   ├── MainContent.tsx   # Main content area with header/footer
-│   ├── useMainContent.ts # Hook: activeView, isLoading, error
+│   ├── useMainContent.ts # Hook: activeView, folderName, OCR handlers
+│   ├── OCRResultsDrawer.tsx # Slide-out panel for OCR results
+│   └── index.ts
+├── login/
+│   ├── LoginPage.tsx     # Initial folder selection screen
 │   └── index.ts
 └── ui/                   # Chakra UI snippets
 ```
@@ -146,9 +152,8 @@ src/renderer/src/components/
 
 Each region has a focused hook that provides a clean API:
 
-- `useTitlebar()`: Access title, toggle sidebar
 - `useSidebar()`: Collapse state, width, navigation (`navigateTo()`)
-- `useMainContent()`: Active view, loading state, errors
+- `useMainContent()`: Active view, folder name, OCR state and handlers
 
 ### Import Pattern
 

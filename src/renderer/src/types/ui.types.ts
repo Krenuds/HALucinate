@@ -20,7 +20,6 @@ export interface OCRState {
 export interface UIState {
   sidebar: SidebarState
   activeView: ViewId
-  title: string
   projectFolder: string | null
   // Image selection state
   images: ImageFile[]
@@ -37,7 +36,6 @@ export interface UIContextValue extends UIState {
 
   // View/navigation actions
   setActiveView: (view: ViewId) => void
-  setTitle: (title: string) => void
   setProjectFolder: (folder: string | null) => void
 
   // Image/selection actions

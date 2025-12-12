@@ -11,16 +11,20 @@ interface AppLayoutProps {
 }
 
 function AppLayout({ projectFolder }: AppLayoutProps): React.JSX.Element {
-  const { title, setProjectFolder } = useUI()
+  const { setProjectFolder } = useUI()
 
   // Store project folder in context for MainContent header
   useEffect(() => {
     setProjectFolder(projectFolder)
   }, [projectFolder, setProjectFolder])
 
+  const handleChangeFolder = (): void => {
+    window.api.selectProjectFolder()
+  }
+
   return (
     <Flex direction="column" h="100vh">
-      <Titlebar title={title} />
+      <Titlebar onChangeFolder={handleChangeFolder} />
       <Flex flex="1" overflow="hidden">
         <Sidebar />
         <MainContent />

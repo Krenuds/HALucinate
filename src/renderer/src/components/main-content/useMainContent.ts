@@ -9,8 +9,6 @@ import { useApp } from '@renderer/context'
 export function useMainContent() {
   const {
     activeView,
-    title,
-    setTitle,
     projectFolder,
     selectedImages,
     ocr,
@@ -68,8 +66,6 @@ export function useMainContent() {
   return {
     // View state
     activeView,
-    title,
-    setTitle,
     folderName,
 
     // Selected images from sidebar

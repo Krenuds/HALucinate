@@ -28,7 +28,7 @@ function MainContent(): React.JSX.Element {
             onClick={handleRunOCR}
           >
             <LuScanText />
-            Run OCR
+            Extract
           </Button>
         </HStack>
       </Box>

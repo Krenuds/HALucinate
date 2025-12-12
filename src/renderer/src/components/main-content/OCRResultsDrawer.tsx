@@ -92,6 +92,8 @@ function OCRResultsDrawer({ open, onOpenChange, results }: OCRResultsDrawerProps
                         bg="blackAlpha.300"
                         maxH="200px"
                         overflow="auto"
+                        userSelect="text"
+                        cursor="text"
                       >
                         {result.text || '(No text detected)'}
                       </Code>
