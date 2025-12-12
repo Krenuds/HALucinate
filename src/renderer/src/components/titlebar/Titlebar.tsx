@@ -1,5 +1,6 @@
 import { HStack, Heading, IconButton, Spacer, Box } from '@chakra-ui/react'
-import { VscChromeMinimize, VscChromeMaximize, VscChromeClose } from 'react-icons/vsc'
+import { VscChromeMinimize, VscChromeMaximize, VscChromeClose, VscFolderOpened } from 'react-icons/vsc'
+import { Tooltip } from '@renderer/components/ui/tooltip'
 
 interface TitlebarProps {
   title?: string
@@ -7,6 +8,9 @@ interface TitlebarProps {
 
 function Titlebar({ title = 'Mr. Parsypants' }: TitlebarProps): React.JSX.Element {
 
+  const handleChangeFolder = (): void => {
+    window.api.selectProjectFolder()
+  }
   const handleMinimize = (): void => window.api.windowMinimize()
   const handleMaximize = (): void => window.api.windowMaximize()
   const handleClose = (): void => window.api.windowClose()
@@ -23,6 +27,21 @@ function Titlebar({ title = 'Mr. Parsypants' }: TitlebarProps): React.JSX.Elemen
           {title}
         </Heading>
         <Spacer />
+        <HStack gap="1" css={{ WebkitAppRegion: 'no-drag' }}>
+          <Tooltip content="Change project folder" positioning={{ placement: 'bottom' }}>
+            <IconButton
+              aria-label="Change project folder"
+              variant="ghost"
+              size="sm"
+              rounded="sm"
+              bg="transparent"
+              onClick={handleChangeFolder}
+              _hover={{ bg: 'whiteAlpha.200' }}
+            >
+              <VscFolderOpened />
+            </IconButton>
+          </Tooltip>
+        </HStack>
         <HStack gap="0" css={{ WebkitAppRegion: 'no-drag' }}>
           <IconButton
             aria-label="Minimize"
