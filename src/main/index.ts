@@ -1,4 +1,5 @@
-import { app, shell, BrowserWindow, ipcMain, screen, dialog } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, screen, dialog, protocol, net } from 'electron'
+import { pathToFileURL } from 'url'
 import { join } from 'path'
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, statSync } from 'fs'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
@@ -185,10 +186,35 @@ function createWindow(): void {
   }
 }
 
+// Register custom protocol scheme before app is ready
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: 'local-image',
+    privileges: {
+      secure: true,
+      supportFetchAPI: true,
+      bypassCSP: true
+    }
+  }
+])
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
+  // Register protocol handler for local images
+  protocol.handle('local-image', (request) => {
+    // URL format: local-image://host/C:/path/to/file.png
+    // We ignore the host and extract the path
+    const url = new URL(request.url)
+    // On Windows, pathname starts with /C:/ so we need to remove the leading slash
+    let filePath = decodeURIComponent(url.pathname)
+    if (process.platform === 'win32' && filePath.startsWith('/')) {
+      filePath = filePath.slice(1)
+    }
+    return net.fetch(pathToFileURL(filePath).toString())
+  })
+
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
 

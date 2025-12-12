@@ -1,6 +1,13 @@
 import { useState, useEffect } from 'react'
-import { Box, VStack, Text, HStack, Spinner } from '@chakra-ui/react'
+import { Box, VStack, Text, HStack, Spinner, Image } from '@chakra-ui/react'
+import { Tooltip } from '../ui/tooltip'
 import type { ImageFile } from '../../../../preload/index.d'
+
+function getLocalImageUrl(filePath: string): string {
+  // Convert local file path to custom protocol URL
+  // Format: local-image://local/C:/path/to/file.png
+  return `local-image://local/${encodeURIComponent(filePath).replace(/%2F/g, '/').replace(/%3A/g, ':')}`
+}
 
 function formatTimestamp(timestamp: number): string {
   const date = new Date(timestamp)
@@ -72,28 +79,54 @@ function FileBrowser(): React.JSX.Element {
     <VStack align="stretch" gap="0">
       {images.map((image) => {
         const prefix = extractPrefix(image.name)
+        const imageUrl = getLocalImageUrl(image.path)
         return (
-          <HStack
+          <Tooltip
             key={image.path}
-            py="1"
-            px="2"
-            rounded="sm"
-            cursor="pointer"
-            _hover={{ bg: 'whiteAlpha.100' }}
-            gap="1.5"
+            openDelay={100}
+            closeDelay={0}
+            positioning={{ placement: 'right', gutter: 8 }}
+            content={
+              <Box p="1">
+                <Image
+                  src={imageUrl}
+                  alt={image.name}
+                  maxW="600px"
+                  maxH="400px"
+                  objectFit="contain"
+                  rounded="md"
+                />
+              </Box>
+            }
+            contentProps={{
+              css: {
+                bg: 'transparent',
+                boxShadow: 'lg',
+                p: 0
+              }
+            }}
           >
-            <Text fontSize="sm" color="fg" truncate title={image.name}>
-              {formatTimestamp(image.modifiedAt)}
-            </Text>
-            {prefix && (
-              <>
-                <Text fontSize="sm" color="fg.muted">|</Text>
-                <Text fontSize="sm" color="fg.muted" truncate>
-                  {prefix}
-                </Text>
-              </>
-            )}
-          </HStack>
+            <HStack
+              py="1"
+              px="2"
+              rounded="sm"
+              cursor="pointer"
+              _hover={{ bg: 'whiteAlpha.100' }}
+              gap="1.5"
+            >
+              <Text fontSize="sm" color="fg" truncate title={image.name}>
+                {formatTimestamp(image.modifiedAt)}
+              </Text>
+              {prefix && (
+                <>
+                  <Text fontSize="sm" color="fg.muted">|</Text>
+                  <Text fontSize="sm" color="fg.muted" truncate>
+                    {prefix}
+                  </Text>
+                </>
+              )}
+            </HStack>
+          </Tooltip>
         )
       })}
     </VStack>
