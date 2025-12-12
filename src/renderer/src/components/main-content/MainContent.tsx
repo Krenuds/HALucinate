@@ -8,7 +8,7 @@ function getLocalImageUrl(filePath: string): string {
 }
 
 function MainContent(): React.JSX.Element {
-  const { title, isLoading, selectedImages, ocr, handleRunOCR, handleCancelOCR, setOCRDrawerOpen } =
+  const { folderName, isLoading, selectedImages, ocr, handleRunOCR, handleCancelOCR, setOCRDrawerOpen } =
     useMainContent()
 
   return (
@@ -17,7 +17,7 @@ function MainContent(): React.JSX.Element {
       <Box as="header" px="6" py="3" borderBottomWidth="1px" borderColor="whiteAlpha.100">
         <HStack justify="space-between">
           <Text fontSize="lg" fontWeight="semibold">
-            {title}
+            {folderName || 'No folder selected'}
           </Text>
           <Button
             size="sm"

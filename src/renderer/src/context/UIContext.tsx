@@ -22,7 +22,8 @@ const initialState: UIState = {
     width: 280
   },
   activeView: 'home',
-  title: 'Mr. Parsypants',
+  title: 'Mr. Parsyface',
+  projectFolder: null,
   images: [],
   selectedPaths: [],
   ocr: initialOCRState
@@ -62,6 +63,10 @@ export function UIProvider({ children }: { children: ReactNode }): React.JSX.Ele
 
   const setTitle = useCallback((title: string) => {
     setState((prev) => ({ ...prev, title }))
+  }, [])
+
+  const setProjectFolder = useCallback((projectFolder: string | null) => {
+    setState((prev) => ({ ...prev, projectFolder }))
   }, [])
 
   // Image/selection actions
@@ -115,6 +120,7 @@ export function UIProvider({ children }: { children: ReactNode }): React.JSX.Ele
       setSidebarWidth,
       setActiveView,
       setTitle,
+      setProjectFolder,
       setImages,
       setSelectedPaths,
       selectedImages,
@@ -125,7 +131,7 @@ export function UIProvider({ children }: { children: ReactNode }): React.JSX.Ele
       setOCRDrawerOpen,
       clearOCRResults
     }),
-    [state, toggleSidebar, setSidebarCollapsed, setSidebarWidth, setActiveView, setTitle, setImages, setSelectedPaths, selectedImages, setOCRRunning, setOCRProgress, setOCRResults, setOCRError, setOCRDrawerOpen, clearOCRResults]
+    [state, toggleSidebar, setSidebarCollapsed, setSidebarWidth, setActiveView, setTitle, setProjectFolder, setImages, setSelectedPaths, selectedImages, setOCRRunning, setOCRProgress, setOCRResults, setOCRError, setOCRDrawerOpen, clearOCRResults]
   )
 
   return <UIContext.Provider value={value}>{children}</UIContext.Provider>

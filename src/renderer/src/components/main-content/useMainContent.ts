@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useMemo } from 'react'
 import { useUI } from '@renderer/context'
 import { useApp } from '@renderer/context'
 
@@ -11,6 +11,7 @@ export function useMainContent() {
     activeView,
     title,
     setTitle,
+    projectFolder,
     selectedImages,
     ocr,
     setOCRRunning,
@@ -19,6 +20,12 @@ export function useMainContent() {
     setOCRError,
     setOCRDrawerOpen
   } = useUI()
+
+  // Derive folder name for header display
+  const folderName = useMemo(() => {
+    if (!projectFolder) return null
+    return projectFolder.split(/[/\\]/).pop() || projectFolder
+  }, [projectFolder])
   const { isLoading, error, setLoading, setError, clearError } = useApp()
 
   // Subscribe to OCR progress events
@@ -63,6 +70,7 @@ export function useMainContent() {
     activeView,
     title,
     setTitle,
+    folderName,
 
     // Selected images from sidebar
     selectedImages,

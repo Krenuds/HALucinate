@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Flex } from '@chakra-ui/react'
 import { Titlebar } from './components/titlebar'
 import { Sidebar } from './components/sidebar'
@@ -11,13 +11,12 @@ interface AppLayoutProps {
 }
 
 function AppLayout({ projectFolder }: AppLayoutProps): React.JSX.Element {
-  const { title, setTitle } = useUI()
+  const { title, setProjectFolder } = useUI()
 
-  // Set title to folder name on mount
+  // Store project folder in context for MainContent header
   useEffect(() => {
-    const folderName = projectFolder.split(/[/\\]/).pop() || projectFolder
-    setTitle(folderName)
-  }, [projectFolder, setTitle])
+    setProjectFolder(projectFolder)
+  }, [projectFolder, setProjectFolder])
 
   return (
     <Flex direction="column" h="100vh">
