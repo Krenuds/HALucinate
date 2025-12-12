@@ -1,5 +1,20 @@
 import { createContext, useContext, useState, useCallback, useMemo, ReactNode } from 'react'
-import type { UIContextValue, UIState, ViewId, ImageFile } from '@renderer/types'
+import type { UIContextValue, UIState, ViewId, ImageFile, OCRProgress, OCRResult, OCRState } from '@renderer/types'
+
+const initialOCRState: OCRState = {
+  isRunning: false,
+  progress: {
+    status: 'idle',
+    currentImage: null,
+    currentIndex: 0,
+    totalImages: 0,
+    imageProgress: 0,
+    overallProgress: 0
+  },
+  results: [],
+  error: null,
+  drawerOpen: false
+}
 
 const initialState: UIState = {
   sidebar: {
@@ -9,7 +24,8 @@ const initialState: UIState = {
   activeView: 'home',
   title: 'Mr. Parsypants',
   images: [],
-  selectedPaths: []
+  selectedPaths: [],
+  ocr: initialOCRState
 }
 
 const UIContext = createContext<UIContextValue | null>(null)
@@ -63,6 +79,34 @@ export function UIProvider({ children }: { children: ReactNode }): React.JSX.Ele
     return state.images.filter((img) => pathSet.has(img.path))
   }, [state.images, state.selectedPaths])
 
+  // OCR actions
+  const setOCRRunning = useCallback((isRunning: boolean) => {
+    setState((prev) => ({ ...prev, ocr: { ...prev.ocr, isRunning } }))
+  }, [])
+
+  const setOCRProgress = useCallback((progress: OCRProgress) => {
+    setState((prev) => ({ ...prev, ocr: { ...prev.ocr, progress } }))
+  }, [])
+
+  const setOCRResults = useCallback((results: OCRResult[]) => {
+    setState((prev) => ({ ...prev, ocr: { ...prev.ocr, results } }))
+  }, [])
+
+  const setOCRError = useCallback((error: string | null) => {
+    setState((prev) => ({ ...prev, ocr: { ...prev.ocr, error } }))
+  }, [])
+
+  const setOCRDrawerOpen = useCallback((drawerOpen: boolean) => {
+    setState((prev) => ({ ...prev, ocr: { ...prev.ocr, drawerOpen } }))
+  }, [])
+
+  const clearOCRResults = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      ocr: { ...initialOCRState }
+    }))
+  }, [])
+
   const value = useMemo<UIContextValue>(
     () => ({
       ...state,
@@ -73,9 +117,15 @@ export function UIProvider({ children }: { children: ReactNode }): React.JSX.Ele
       setTitle,
       setImages,
       setSelectedPaths,
-      selectedImages
+      selectedImages,
+      setOCRRunning,
+      setOCRProgress,
+      setOCRResults,
+      setOCRError,
+      setOCRDrawerOpen,
+      clearOCRResults
     }),
-    [state, toggleSidebar, setSidebarCollapsed, setSidebarWidth, setActiveView, setTitle, setImages, setSelectedPaths, selectedImages]
+    [state, toggleSidebar, setSidebarCollapsed, setSidebarWidth, setActiveView, setTitle, setImages, setSelectedPaths, selectedImages, setOCRRunning, setOCRProgress, setOCRResults, setOCRError, setOCRDrawerOpen, clearOCRResults]
   )
 
   return <UIContext.Provider value={value}>{children}</UIContext.Provider>

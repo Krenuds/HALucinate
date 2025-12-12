@@ -4,11 +4,44 @@ import { join } from 'path'
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, statSync } from 'fs'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import chokidar, { type FSWatcher } from 'chokidar'
+import Tesseract from 'tesseract.js'
 import icon from '../../resources/icon.png?asset'
 
 // File watcher instance
 let fileWatcher: FSWatcher | null = null
 let mainWindow: BrowserWindow | null = null
+
+// OCR state
+let ocrCancelled = false
+let ocrWorker: Tesseract.Worker | null = null
+
+interface OCRProgress {
+  status: 'idle' | 'initializing' | 'processing' | 'completed' | 'error' | 'cancelled'
+  currentImage: string | null
+  currentIndex: number
+  totalImages: number
+  imageProgress: number
+  overallProgress: number
+}
+
+interface OCRResult {
+  path: string
+  text: string
+  confidence: number
+  error?: string
+}
+
+interface OCRResponse {
+  success: boolean
+  results: OCRResult[]
+  error?: string
+}
+
+function sendOCRProgress(progress: OCRProgress): void {
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send('ocr-progress', progress)
+  }
+}
 
 // Start watching a folder for image changes
 function startFileWatcher(folderPath: string): void {
@@ -338,6 +371,123 @@ app.whenReady().then(() => {
       return []
     }
     return scanForImages(config.projectFolder)
+  })
+
+  // OCR handler - sequential processing
+  ipcMain.handle('run-ocr', async (_event, imagePaths: string[]): Promise<OCRResponse> => {
+    ocrCancelled = false
+    const results: OCRResult[] = []
+
+    try {
+      // Initialize worker
+      sendOCRProgress({
+        status: 'initializing',
+        currentImage: null,
+        currentIndex: 0,
+        totalImages: imagePaths.length,
+        imageProgress: 0,
+        overallProgress: 0
+      })
+
+      ocrWorker = await Tesseract.createWorker('eng')
+
+      // Process images sequentially
+      for (let i = 0; i < imagePaths.length; i++) {
+        if (ocrCancelled) {
+          sendOCRProgress({
+            status: 'cancelled',
+            currentImage: null,
+            currentIndex: i,
+            totalImages: imagePaths.length,
+            imageProgress: 0,
+            overallProgress: Math.round((i / imagePaths.length) * 100)
+          })
+          break
+        }
+
+        const imagePath = imagePaths[i]
+
+        sendOCRProgress({
+          status: 'processing',
+          currentImage: imagePath,
+          currentIndex: i,
+          totalImages: imagePaths.length,
+          imageProgress: 0,
+          overallProgress: Math.round((i / imagePaths.length) * 100)
+        })
+
+        try {
+          const { data } = await ocrWorker.recognize(imagePath)
+
+          results.push({
+            path: imagePath,
+            text: data.text,
+            confidence: data.confidence
+          })
+        } catch (err) {
+          results.push({
+            path: imagePath,
+            text: '',
+            confidence: 0,
+            error: err instanceof Error ? err.message : 'Unknown error'
+          })
+        }
+
+        // Update progress after each image
+        sendOCRProgress({
+          status: 'processing',
+          currentImage: imagePath,
+          currentIndex: i,
+          totalImages: imagePaths.length,
+          imageProgress: 100,
+          overallProgress: Math.round(((i + 1) / imagePaths.length) * 100)
+        })
+      }
+
+      // Cleanup worker
+      if (ocrWorker) {
+        await ocrWorker.terminate()
+        ocrWorker = null
+      }
+
+      if (!ocrCancelled) {
+        sendOCRProgress({
+          status: 'completed',
+          currentImage: null,
+          currentIndex: imagePaths.length,
+          totalImages: imagePaths.length,
+          imageProgress: 100,
+          overallProgress: 100
+        })
+      }
+
+      return { success: true, results }
+    } catch (err) {
+      if (ocrWorker) {
+        await ocrWorker.terminate()
+        ocrWorker = null
+      }
+
+      sendOCRProgress({
+        status: 'error',
+        currentImage: null,
+        currentIndex: 0,
+        totalImages: imagePaths.length,
+        imageProgress: 0,
+        overallProgress: 0
+      })
+
+      return {
+        success: false,
+        results,
+        error: err instanceof Error ? err.message : 'OCR failed'
+      }
+    }
+  })
+
+  // Cancel OCR handler
+  ipcMain.on('cancel-ocr', () => {
+    ocrCancelled = true
   })
 
   createWindow()

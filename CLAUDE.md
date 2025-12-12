@@ -180,6 +180,70 @@ Uses Chakra UI's `Listbox` component with `selectionMode="extended"` for standar
 
 Hovering over an item shows a tooltip preview of the image (max 600x400px) using the `local-image://` custom protocol registered in main process.
 
+## OCR System
+
+The app uses **tesseract.js** for OCR text extraction from selected images.
+
+### Architecture
+
+```
+[Renderer] Button Click
+    │
+    ▼
+window.api.runOCR(paths) ──invoke──▶ [Main] ipcMain.handle('run-ocr')
+    │                                         │
+    │                                         ▼ (loop per image)
+    │                                    webContents.send('ocr-progress')
+    │                                         │
+    ◀──────────────────────────────────────────
+    │ onOCRProgress callback fires
+    │
+    ▼ (on complete)
+Promise resolves with { success, results }
+```
+
+### IPC Methods
+
+| Method | Type | Description |
+|--------|------|-------------|
+| `runOCR(paths)` | invoke/handle | Process images, returns `OCRResponse` |
+| `cancelOCR()` | send/on | Set cancellation flag |
+| `onOCRProgress(cb)` | event | Subscribe to progress updates |
+
+### State Management
+
+OCR state lives in UIContext (`src/renderer/src/context/UIContext.tsx`):
+
+```typescript
+interface OCRState {
+  isRunning: boolean
+  progress: OCRProgress  // status, currentIndex, totalImages, etc.
+  results: OCRResult[]   // path, text, confidence, error
+  error: string | null
+  drawerOpen: boolean
+}
+```
+
+### Key Files
+
+- `src/main/index.ts`: OCR handlers, Tesseract worker management
+- `src/preload/index.ts`: IPC bridge methods
+- `src/renderer/src/components/main-content/useMainContent.ts`: OCR handlers + IPC subscription
+- `src/renderer/src/components/main-content/OCRResultsDrawer.tsx`: Results panel
+
+### Current Limitations
+
+- **Sequential processing**: CPU-only, one image at a time
+- **English only**: Hardcoded to `'eng'` language
+
+### Future Extensions
+
+- Parallel processing with `p-limit` when GPU available
+- Language selection (tesseract.js supports 100+ languages)
+- Output formats: hOCR, PDF, TSV
+
+---
+
 **NEXT STEPS**
 - READ LATEST 4 GIT COMMIT COMMENTS IN FULL RIGHT NOW
 - ECHO "GIT INGESTED, HOSS" IMMEDIATELY AFTER

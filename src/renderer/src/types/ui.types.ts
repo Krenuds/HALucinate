@@ -1,12 +1,20 @@
 // UI/Layout state types
 
-import type { ImageFile } from '../../../preload/index.d'
+import type { ImageFile, OCRProgress, OCRResult } from '../../../preload/index.d'
 
 export type ViewId = 'home' | 'settings' | (string & {})
 
 export interface SidebarState {
   isCollapsed: boolean
   width: number
+}
+
+export interface OCRState {
+  isRunning: boolean
+  progress: OCRProgress
+  results: OCRResult[]
+  error: string | null
+  drawerOpen: boolean
 }
 
 export interface UIState {
@@ -16,6 +24,8 @@ export interface UIState {
   // Image selection state
   images: ImageFile[]
   selectedPaths: string[]
+  // OCR state
+  ocr: OCRState
 }
 
 export interface UIContextValue extends UIState {
@@ -32,7 +42,15 @@ export interface UIContextValue extends UIState {
   setImages: (images: ImageFile[]) => void
   setSelectedPaths: (paths: string[]) => void
   selectedImages: ImageFile[]
+
+  // OCR actions
+  setOCRRunning: (running: boolean) => void
+  setOCRProgress: (progress: OCRProgress) => void
+  setOCRResults: (results: OCRResult[]) => void
+  setOCRError: (error: string | null) => void
+  setOCRDrawerOpen: (open: boolean) => void
+  clearOCRResults: () => void
 }
 
-// Re-export ImageFile for convenience
-export type { ImageFile }
+// Re-export types for convenience
+export type { ImageFile, OCRProgress, OCRResult }

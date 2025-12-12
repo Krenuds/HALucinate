@@ -18,6 +18,16 @@ const api = {
     return (): void => {
       electronAPI.ipcRenderer.removeListener('files-changed', handler)
     }
+  },
+  runOCR: (imagePaths: string[]): Promise<OCRResponse> =>
+    electronAPI.ipcRenderer.invoke('run-ocr', imagePaths),
+  cancelOCR: (): void => electronAPI.ipcRenderer.send('cancel-ocr'),
+  onOCRProgress: (callback: (progress: OCRProgress) => void): (() => void) => {
+    const handler = (_event: unknown, progress: OCRProgress): void => callback(progress)
+    electronAPI.ipcRenderer.on('ocr-progress', handler)
+    return (): void => {
+      electronAPI.ipcRenderer.removeListener('ocr-progress', handler)
+    }
   }
 }
 
@@ -26,6 +36,28 @@ interface ImageFile {
   name: string
   modifiedAt: number
   folder: string | null
+}
+
+interface OCRProgress {
+  status: 'idle' | 'initializing' | 'processing' | 'completed' | 'error' | 'cancelled'
+  currentImage: string | null
+  currentIndex: number
+  totalImages: number
+  imageProgress: number
+  overallProgress: number
+}
+
+interface OCRResult {
+  path: string
+  text: string
+  confidence: number
+  error?: string
+}
+
+interface OCRResponse {
+  success: boolean
+  results: OCRResult[]
+  error?: string
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to
